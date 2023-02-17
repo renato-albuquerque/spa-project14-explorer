@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPA</title>
+</head>
+<body>
+    <nav>
+        <a href="/" onclick="route()">Home</a>
+        <a href="/about" onclick="route()">About</a>
+        <a href="/contact" onclick="route()">Contact</a>
+        <a href="/404" onclick="route()">404</a>
+    </nav>
+    
+    <div id="app"></div>
+
+    <script>
+        const routes = {
+            "/": "/pages/home.html",                // O pathname é /
+            "/about": "/pages/about.html",          // O pathname é /about
+            "/contact": "/pages/contact.html",      // O pathname é /contact    
+            404: "/pages/404.html"                  // O pathname é /404
+        }
+
+        function route(event) {
+            event = event || window.event
+            event.preventDefault()          // Evitar que algum evento dispare por padrão. Ao clicar no link (tag a), 
+                                            // não redirecionar.
+            window.history.pushState({}, "", event.target.href)     // Para ver a rota mudar, quando clicar em cada tag a.
+                                                                    // pushState: colocar um dado no histórico.
+                                                                    // Vai pegar o href da tag a, e colocar no histórico.
+            handle()
+        }
+
+        function handle() {
+            const { pathname } = window.location    // Outra forma: const pathname = window.location.pathname
+            const route = routes[pathname] || routes[404]
+        
+            fetch(route)
+            .then(data => data.text()) 
+            .then(html => {
+                document.querySelector("#app").innerHTML = html
+            })
+        }
+
+        handle()
+
+        window.onpopstate = () => handle()
+
+    </script>
+</body>
+</html>
